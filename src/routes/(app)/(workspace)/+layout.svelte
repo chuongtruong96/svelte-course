@@ -3,13 +3,19 @@
 	import { Settings, StickyNote, User } from '@lucide/svelte';
 
 	import { page } from '$app/state';
+	import FormMessage from '$components/FormMessage.svelte';
+	import { handlePopoverLink } from '$lib/utils';
+	import defineAbilityFor from '$lib/ability';
+	import { subject } from '@casl/ability';
 
 	let { data, children }: LayoutProps = $props();
+
+	let ability = $derived(defineAbilityFor(data.user, data.workspaceAccess));
 </script>
 
 <div class="flex h-full">
-	<div class="bg-base-100 border-base-300 flex w-65 flex-col border-r">
-		<div class="bg-base-100 border-b-base-300 flex flex-row items-center border-b-1 p-4">
+	<div class="flex w-65 flex-col border-r border-base-300 bg-base-100">
+		<div class="flex flex-row items-center border-b-1 border-b-base-300 bg-base-100 p-4">
 			<div class="avatar avatar-placeholder">
 				<div class=" w-10 rounded-md bg-blue-700">
 					<span class="text-lg text-white">{data.workspace.name[0].toUpperCase()}</span>
@@ -17,31 +23,39 @@
 			</div>
 			<div class="ms-4 flex-1">
 				<h4 class="me-2 mt-0 mb-0 line-clamp-1">{data.workspace.name}</h4>
-				<!-- TODO: Add role -->
-				<p class="text-sm opacity-70">TODO</p>
+				<p class="text-sm opacity-70">{data.workspaceAccess.role}</p>
 			</div>
 			<div>
-				<!-- TODO: CHECK IF USER CAN UPDATE WORKSPACE -->
-				<a class="btn btn-sm rounded-md" href="/w/{data.workspace.id}/edit">Edit</a>
+				{#if ability.can('update', subject('Workspace', data.workspace))}
+					<a
+						onclick={handlePopoverLink('editWorkspace')}
+						class="btn rounded-md btn-sm"
+						href="/w/{data.workspace.id}/edit">Edit</a
+					>
+				{/if}
 			</div>
 		</div>
 		<div class="flex-1 overflow-y-auto p-2">
-			<ul class="menu rounded-box m-0 mt-2 w-full bg-transparent p-0">
+			<ul class="menu m-0 mt-2 w-full rounded-box bg-transparent p-0">
 				<li>
 					<a class="rounded-md" href="/w/{data.workspace.id}"><StickyNote size="22" /> Pages</a>
 				</li>
-				<!-- TODO: CHECK IF USER CAN MANAGE WORKSPACE -->
-				<li>
-					<a class="rounded-md" href="/w/{data.workspace.id}/members"><User size="22" /> Members</a>
-				</li>
-				<!-- TODO: CHECK IF USER CAN CHANGE WORKSPACE SETTINGS -->
-				<li>
-					<a class="rounded-md" href="/w/{data.workspace.id}/settings"
-						><Settings size="22" />Settings</a
-					>
-				</li>
+				{#if ability.can('manage', subject('Workspace', data.workspace))}
+					<li>
+						<a class="rounded-md" href="/w/{data.workspace.id}/members"
+							><User size="22" /> Members</a
+						>
+					</li>
+				{/if}
+				{#if ability.can('update', subject('Workspace', data.workspace)) || ability.can('delete', subject('Workspace', data.workspace))}
+					<li>
+						<a class="rounded-md" href="/w/{data.workspace.id}/settings"
+							><Settings size="22" />Settings</a
+						>
+					</li>
+				{/if}
 			</ul>
-			<ul class="menu rounded-box mt-4 w-full bg-transparent p-0">
+			<ul class="menu mt-4 w-full rounded-box bg-transparent p-0">
 				<li class="menu-title">Pages</li>
 				{#each data.pages as _page}
 					<li>
@@ -59,6 +73,9 @@
 		</div>
 	</div>
 	<div class="prose max-h-full max-w-none flex-1 overflow-y-auto p-6">
+		{#if page.form?.message}
+			<FormMessage message={page.form?.message} />
+		{/if}
 		{@render children()}
 	</div>
 </div>

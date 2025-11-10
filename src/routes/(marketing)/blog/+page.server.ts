@@ -3,13 +3,14 @@ import type { PageServerLoad } from './$types';
 import type { PostsResponse } from '$lib/types';
 import { POSTS_PER_PAGE } from '$lib/constants';
 import { env } from '$env/dynamic/private';
-import { TEST, FROM_DOT_ENV } from '$env/static/private';
+import { FROM_DOT_ENV } from '$env/static/private';
+
+export const prerender = false;
 
 export const load = (async ({ fetch, url }) => {
 	console.log('TEST from $env/dynamic/private', env.TEST);
 	console.log('FROM_DOT_ENV from $env/dynamic/private', env.FROM_DOT_ENV);
 
-	console.log('TEST from $env/static/private', TEST);
 	console.log('FROM_DOT_ENV from $env/static/private', FROM_DOT_ENV);
 
 	const page = +(url.searchParams.get('page') || 1);
