@@ -2,6 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { auth } from '$lib/server/auth';
 import { requireLogin } from '$lib/server/auth';
+import { parse } from 'cookie';
 
 export const load = (async () => {
 	const session = requireLogin();
@@ -17,8 +18,11 @@ export const actions = {
 				headers: request.headers,
 				asResponse: true
 			});
-			if (res.status === 200) {
-				cookies.delete('better-auth.session_token', {
+			const setCookieHeader = res.headers.get('set-cookie');
+			if (res.status === 200 && setCookieHeader) {
+				const parsedCookie = parse(setCookieHeader);
+				const name = Object.keys(parsedCookie)[0];
+				cookies.delete(name, {
 					path: '/'
 				});
 				locals.session = null;

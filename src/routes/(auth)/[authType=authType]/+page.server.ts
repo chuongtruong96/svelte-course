@@ -85,7 +85,8 @@ export const actions = {
 			const setCookieHeader = res.headers.get('set-cookie');
 			if (setCookieHeader) {
 				const parsedCookie = parse(setCookieHeader);
-				cookies.set('better-auth.session_token', parsedCookie['better-auth.session_token'], {
+				const name = Object.keys(parsedCookie)[0];
+				cookies.set(name, parsedCookie[name], {
 					path: '/',
 					httpOnly: true,
 					sameSite: 'lax',

@@ -10,7 +10,7 @@ import { building } from '$app/environment';
 export const auth = betterAuth({
 	secret: env.BETTER_AUTH_SECRET,
 	baseURL: building ? '' : env.BETTER_AUTH_URL,
-	basePath: '/api/auth',
+	basePath: 'api/auth',
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true

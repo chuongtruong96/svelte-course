@@ -3,7 +3,8 @@
 import Rect from '$lib/rect.js';
 import type { Post, PostComment } from '$lib/types.js';
 import { error } from '@sveltejs/kit';
-export const prerender = false;
+import type { EntryGenerator } from './$types.js';
+export const prerender = 'auto';
 export const load = async ({ params, fetch, depends }) => {
 	// await parent();
 	depends('blog:single_page');
@@ -38,3 +39,7 @@ export const load = async ({ params, fetch, depends }) => {
 		rect: new Rect(0, 0, 100, 100)
 	};
 };
+
+// export const entries: EntryGenerator = async () => {
+// 	return [{ id: '6' }, { id: '7' }];
+// };

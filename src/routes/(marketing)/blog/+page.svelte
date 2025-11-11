@@ -8,7 +8,8 @@
 	let { data } = $props();
 
 	let posts = $derived(data.posts.posts);
-	let currentPage = $derived(+(page.url.searchParams.get('page') ?? 1));
+	// let currentPage = $derived(+(page.url.searchParams.get('page') ?? 1));
+	let currentPage = 1;
 	let isLoading = $state(false);
 	let firstLoadedPage = $derived(currentPage);
 	let lastLoadedPage = $derived(currentPage);
@@ -35,7 +36,7 @@
 		{/each}
 	</div>
 
-	<div class="no-js:hidden mt-10 flex justify-center">
+	<div class="mt-10 flex justify-center no-js:hidden">
 		{#if Math.ceil(data.posts.total / POSTS_PER_PAGE) !== lastLoadedPage}
 			<button disabled={isLoading} class="btn btn-outline" onclick={loadMorePosts}>Load More</button
 			>
@@ -44,13 +45,13 @@
 		{/if}
 	</div>
 
-	<div class="no-js:flex hidden justify-end">
-		<div class="join mt-10 grid w-full max-w-[500px] grid-cols-2 gap-4">
+	<div class="hidden justify-end no-js:flex">
+		<div class="mt-10 join grid w-full max-w-[500px] grid-cols-2 gap-4">
 			{#if currentPage > 1}
-				<a href="/blog?page={currentPage - 1}" class="join-item btn btn-outline">Previous page</a>
+				<a href="/blog?page={currentPage - 1}" class="btn join-item btn-outline">Previous page</a>
 			{/if}
 			{#if Math.ceil(data.posts.total / POSTS_PER_PAGE) !== currentPage}
-				<a href="/blog?page={currentPage + 1}" class="join-item btn btn-outline">Next</a>
+				<a href="/blog?page={currentPage + 1}" class="btn join-item btn-outline">Next</a>
 			{/if}
 		</div>
 	</div>
